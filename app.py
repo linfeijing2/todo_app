@@ -22,6 +22,7 @@ class TodoList(db.Model):
     __tablename__ = 'todolists'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    #childen name = db.relationship('Childclass', backref='customized parent reference'))
     todos = db.relationship('Todo', backref='todoparent', lazy=True)
     
 
@@ -76,12 +77,17 @@ def delete_todo(todo_id):
     db.session.close()
   return redirect(url_for('index'))
 
+# route the page to the list_id
+@app.route('/todolists/<todolist_id>')
+def get_todo_list(todolist_id):
+    return render_template('index.html', 
+    data=Todo.query.filter_by(todolist_id=todolist_id).order_by('id').all())
+    # return render_template('index.html', data=Todo.query.all())
 
 # route that listens to homepage
 @app.route('/')
 def index():
-    return render_template('index.html', data=Todo.query.order_by('id').all())
-    # return render_template('index.html', data=Todo.query.all())
+    return redirect(url_for('get_todo_list'), todolist_id = 1)
 
 if __name__ == '__main__': 
    app.run(host="127.0.0.1")
